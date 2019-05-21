@@ -7,13 +7,21 @@ Directions:  Host the folder and open localhost as always.  Open Developer Tools
 To select a demo, open and edit main-scene.js.  Assign your choice to the Main_Scene variable.  Your choices for scenes are:
 
 Minimal_Webgl_Demo
+
 Axes_Viewer_Test_Scene
+
 Inertia_Demo
+
 Collision_Demo
+
 Many_Lights_Demo
+
 Obj_File_Demo
+
 Scene_To_Texture_Demo
+
 Text_Demo
+
 Transforms_Sandbox
 
 The code comments in each file should help, as should the explanations the demos print on the page.  Enjoy!
