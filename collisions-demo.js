@@ -54,7 +54,7 @@ export class Body
   static intersect_sphere( p, margin = 0 )
     { return p.dot( p ) < 1 + margin;
     }
-  check_if_colliding( b, collider )   
+  check_if_colliding( b, collider )
     {                                     // check_if_colliding(): Collision detection function.
                                           // DISCLAIMER:  The collision method shown below is not used by anyone; it's just very quick 
                                           // to code.  Making every collision body an ellipsoid is kind of a hack, and looping 
