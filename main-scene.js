@@ -21,6 +21,8 @@ import { Obj_File_Demo }
   from "./obj-file-demo.js"
 import { Scene_To_Texture_Demo }
   from "./scene-to-texture-demo.js"
+import { Surfaces_Demo, Nesting_Test }
+  from "./nesting-test.js"  ;
 import { Text_Demo }
   from "./text-demo.js"  ;
 import { Transforms_Sandbox } 
@@ -32,6 +34,7 @@ Object.assign( defs,
                      { Many_Lights_Demo },
                      { Obj_File_Demo },
                      { Scene_To_Texture_Demo },
+                     { Surfaces_Demo, Nesting_Test },
                      { Text_Demo },
                      { Transforms_Sandbox } );
 
@@ -40,7 +43,7 @@ Object.assign( defs,
 
 // (Can define Main_Scene's class here)
 
-const Main_Scene = Minimal_Webgl_Demo;
+const Main_Scene = Surfaces_Demo;
 const Additional_Scenes = [];
 
 export { Main_Scene, Additional_Scenes, Canvas_Widget, Code_Widget, Text_Widget, defs }
