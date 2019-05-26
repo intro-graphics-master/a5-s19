@@ -23,12 +23,16 @@ import { Transforms_Sandbox }
 export class Surfaces_Demo extends Scene
 { constructor( scene_id )
     { super();
-      this.scene_id = scene_id;
 
       if( typeof( scene_id ) === "undefined" )
+        this.is_master = true;
+      
+      this.scene_id = scene_id;
+
+      if( this.is_master )
         this.test_scene = new Surfaces_Demo( 0 );
       else
-        this[ [ "scene_0" ][ this.scene_id ] ] ();
+        this[ [ "scene_0" ][ scene_id ] ] ();
     }
   scene_0()
     { const row_operation = (i,p) => p ? Mat4.translation([ 0,-1,0 ]).times(p.to4(1)).to3() : Vec.of( -1,-1,0 );
@@ -42,7 +46,7 @@ export class Surfaces_Demo extends Scene
     { this.shapes.sheet.draw( context, program_state, Mat4.identity(), this.material );
     }
   show_explanation( document_element, webgl_manager )
-    { if( typeof( this.scene_id ) != "undefined" )
+    { if( !this.is_master )
         return;
 
       document_element.style.padding = 0;
@@ -60,7 +64,7 @@ export class Surfaces_Demo extends Scene
       const element_2 = document_element.appendChild( document.createElement( "div" ) );
       element_2.className = "code-widget";
 
-      const code = new tiny.Code_Widget( element_2, Surfaces_Demo.prototype.scene_1, [], defs, { hide_navigator: 1 } ); 
+      const code = new tiny.Code_Widget( element_2, Surfaces_Demo.prototype.scene_0, [], defs, { hide_navigator: 1 } ); 
     }
   display( context, program_state )
     { if( !context.scratchpad.controls ) 
@@ -77,37 +81,39 @@ export class Surfaces_Demo extends Scene
       program_state.lights = [ new Light( light_position, Color.of( 1,1,1,1 ), 1000000 ) ];   
 
 
-      if( typeof( scene_id ) != "undefined" )
-        this[ [ "scene_0_display" ][ this.scene_id ] ] ();
+      if( this.is_master )
+        context.canvas.style.display = "none";
+      else
+        this[ [ "scene_0_display" ][ this.scene_id ] ] ( context, program_state );
     }
 }
   
-export class Nesting_Test extends Transforms_Sandbox
-  { constructor()
-      { super();
+// export class Nesting_Test extends Transforms_Sandbox
+//   { constructor()
+//       { super();
         
-        this.test_scene = new Surfaces_Demo( 0 );
-      }
-    show_explanation( document_element, webgl_manager )
-      { document_element.style.padding = 0;
-        document_element.style.width = "1080px";
-        document_element.style.overflowY = "hidden";
+//         this.test_scene = new Surfaces_Demo( 0 );
+//       }
+//     show_explanation( document_element, webgl_manager )
+//       { document_element.style.padding = 0;
+//         document_element.style.width = "1080px";
+//         document_element.style.overflowY = "hidden";
 
-        const element_1 = document_element.appendChild( document.createElement( "div" ) );
-        element_1.className = "canvas-widget";
+//         const element_1 = document_element.appendChild( document.createElement( "div" ) );
+//         element_1.className = "canvas-widget";
 
-        const cw = new tiny.Canvas_Widget( element_1, undefined, { make_controls: 0 } );
-        cw.webgl_manager.scenes.push( this.test_scene );
-        cw.webgl_manager.program_state = webgl_manager.program_state;
-        cw.webgl_manager.set_size( [ 1080,300 ] )
+//         const cw = new tiny.Canvas_Widget( element_1, undefined, { make_controls: 0 } );
+//         cw.webgl_manager.scenes.push( this.test_scene );
+//         cw.webgl_manager.program_state = webgl_manager.program_state;
+//         cw.webgl_manager.set_size( [ 1080,300 ] )
 
-        const element_2 = document_element.appendChild( document.createElement( "div" ) );
-        element_2.className = "code-widget";
+//         const element_2 = document_element.appendChild( document.createElement( "div" ) );
+//         element_2.className = "code-widget";
 
-        const code = new tiny.Code_Widget( element_2, Surfaces_Demo.prototype.scene_1, [], defs, { hide_navigator: 1 } ); 
-      }
-    display( context, program_state )
-      { program_state.projection_transform = Mat4.perspective( Math.PI/4, context.width/context.height, 1, 100 );
-        super.display( context, program_state );
-      }
-  }
+//         const code = new tiny.Code_Widget( element_2, Surfaces_Demo.prototype.scene_1, [], defs, { hide_navigator: 1 } ); 
+//       }
+//     display( context, program_state )
+//       { program_state.projection_transform = Mat4.perspective( Math.PI/4, context.width/context.height, 1, 100 );
+//         super.display( context, program_state );
+//       }
+//   }

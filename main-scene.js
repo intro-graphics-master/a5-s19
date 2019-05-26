@@ -21,7 +21,7 @@ import { Obj_File_Demo }
   from "./obj-file-demo.js"
 import { Scene_To_Texture_Demo }
   from "./scene-to-texture-demo.js"
-import { Surfaces_Demo, Nesting_Test }
+import { Surfaces_Demo }
   from "./nesting-test.js"  ;
 import { Text_Demo }
   from "./text-demo.js"  ;
@@ -34,7 +34,7 @@ Object.assign( defs,
                      { Many_Lights_Demo },
                      { Obj_File_Demo },
                      { Scene_To_Texture_Demo },
-                     { Surfaces_Demo, Nesting_Test },
+                     { Surfaces_Demo },
                      { Text_Demo },
                      { Transforms_Sandbox } );
 
