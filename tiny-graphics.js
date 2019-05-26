@@ -428,39 +428,40 @@ class Shape extends Vertex_Buffer
     {                                     // make_flat_shaded_version(): Auto-generate a new class that re-uses any
                                           // Shape's points, but with new normals generated from flat shading.
       return class extends this.constructor
-      { constructor( ...args ) { super( ...args );  this.duplicate_the_shared_vertices();  this.flat_shade(); }
-        duplicate_the_shared_vertices()
-          {                   // (Internal helper function)
-                              //  Prepare an indexed shape for flat shading if it is not ready -- that is, if there are any
-                              // edges where the same vertices are indexed by both the adjacent triangles, and those two 
-                              // triangles are not co-planar.  The two would therefore fight over assigning different normal 
-                              // vectors to the shared vertices.
-            const arrays = {};
-            for( let arr in this.arrays ) arrays[ arr ] = [];
-            for( let index of this.indices )
-              for( let arr in this.arrays )
-                arrays[ arr ].push( this.arrays[ arr ][ index ] );      // Make re-arranged versions of each data field, with
-            Object.assign( this.arrays, arrays );                       // copied values every time an index was formerly re-used.
-            this.indices = this.indices.map( (x,i) => i );    // Without shared vertices, we can use sequential numbering.
-          }
-        flat_shade()           
-          {                    // (Internal helper function)
-                               // Automatically assign the correct normals to each triangular element to achieve flat shading.
-                               // Affect all recently added triangles (those past "offset" in the list).  Assumes that no
-                               // vertices are shared across seams.   First, iterate through the index or position triples:
-            this.indices.length = false;   
-            for( let counter = 0; counter < (this.indices.length ? this.indices.length : this.arrays.position.length); counter += 3 )
-            { const indices = this.indices.length ? [ this.indices[ counter ], this.indices[ counter + 1 ], this.indices[ counter + 2 ] ]
-                                                  : [ counter, counter + 1, counter + 2 ];
-              const [ p1, p2, p3 ] = indices.map( i => this.arrays.position[ i ] );
-                                              // Cross the two edge vectors of this triangle together to get its normal:
-              const n1 = p1.minus(p2).cross( p3.minus(p1) ).normalized();  
-                                              // Flip the normal if adding it to the triangle brings it closer to the origin:
-              if( n1.times(.1).plus(p1).norm() < p1.norm() ) n1.scale(-1);
-                                              // Propagate this normal to the 3 vertices:
-              for( let i of indices ) this.arrays.normal[ i ] = Vec.from( n1 );
-            }
-          }
+      { constructor( ...args )
+          { super( ...args );  this.duplicate_the_shared_vertices();  this.flat_shade(); }        
+      }
+    }
+  duplicate_the_shared_vertices()
+    {                   // (Internal helper function)
+                        //  Prepare an indexed shape for flat shading if it is not ready -- that is, if there are any
+                        // edges where the same vertices are indexed by both the adjacent triangles, and those two 
+                        // triangles are not co-planar.  The two would therefore fight over assigning different normal 
+                        // vectors to the shared vertices.
+      const arrays = {};
+      for( let arr in this.arrays ) arrays[ arr ] = [];
+      for( let index of this.indices )
+        for( let arr in this.arrays )
+          arrays[ arr ].push( this.arrays[ arr ][ index ] );      // Make re-arranged versions of each data field, with
+      Object.assign( this.arrays, arrays );                       // copied values every time an index was formerly re-used.
+      this.indices = this.indices.map( (x,i) => i );    // Without shared vertices, we can use sequential numbering.
+    }
+  flat_shade()           
+    {                    // (Internal helper function)
+                         // Automatically assign the correct normals to each triangular element to achieve flat shading.
+                         // Affect all recently added triangles (those past "offset" in the list).  Assumes that no
+                         // vertices are shared across seams.   First, iterate through the index or position triples:
+      this.indices.length = false;   
+      for( let counter = 0; counter < (this.indices.length ? this.indices.length : this.arrays.position.length); counter += 3 )
+      { const indices = this.indices.length ? [ this.indices[ counter ], this.indices[ counter + 1 ], this.indices[ counter + 2 ] ]
+                                            : [ counter, counter + 1, counter + 2 ];
+        const [ p1, p2, p3 ] = indices.map( i => this.arrays.position[ i ] );
+                                        // Cross the two edge vectors of this triangle together to get its normal:
+        const n1 = p1.minus(p2).cross( p3.minus(p1) ).normalized();  
+                                        // Flip the normal if adding it to the triangle brings it closer to the origin:
+        if( n1.times(.1).plus(p1).norm() < p1.norm() ) n1.scale(-1);
+                                        // Propagate this normal to the 3 vertices:
+        for( let i of indices ) this.arrays.normal[ i ] = Vec.from( n1 );
       }
     }
   normalize_positions( keep_aspect_ratios = true )

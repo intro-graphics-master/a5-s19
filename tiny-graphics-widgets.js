@@ -206,8 +206,8 @@ class Code_Widget
       this.definitions = definitions;
       const code_panel = element.appendChild( document.createElement( "div" ) );
       code_panel.className = "code-panel";
-      const text        = code_panel.appendChild( document.createElement( "p" ) );
-      text.textContent  = "Below is the code for the demo that's running.  Click links to see definitions!";
+//       const text        = code_panel.appendChild( document.createElement( "p" ) );
+//       text.textContent  = "Below is the code for the demo that's running.  Click links to see definitions!";
       this.code_display = code_panel.appendChild( document.createElement( "div" ) );
       this.code_display.className = "code-display";
                                                                             // Default textbox contents:
