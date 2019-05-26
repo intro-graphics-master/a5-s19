@@ -94,9 +94,10 @@ export class Surfaces_Demo extends Scene
       this.shapes.sheet.flat_shade();
 
       this.shapes.sheet.draw( context, program_state, Mat4.identity(), this.material );
+
+// Warning:  You can't call this until you've already drawn the shape once.
       
-     this.shapes.sheet.copy_onto_graphics_card( context.context, ["position","normal"], false );
-      
+      this.shapes.sheet.copy_onto_graphics_card( context.context, ["position","normal"], false );      
     }
   display_scene_2( context, program_state )
     { this.shapes.sheet.draw( context, program_state, Mat4.identity(), this.material );
