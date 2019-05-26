@@ -21,7 +21,7 @@ import { Transforms_Sandbox }
 
 
 export class Surfaces_Demo extends Scene
-{ constructor( scene_id )
+{ constructor( scene_id, material )
     { super();
 
       if( typeof( scene_id ) === "undefined" )
@@ -32,11 +32,16 @@ export class Surfaces_Demo extends Scene
       this.num_scenes = 3;
       
       this.scene_id = scene_id;
-
+      this.material = material;
       
       if( this.is_master )
+      {
+        const textured = new defs.Textured_Phong( 1 );
+        this.material = new Material( textured, { ambient: .5, texture: new Texture( "assets/rgb.jpg" ) } );
+
         for( let i = 0; i < this.num_scenes; i++ )
-          this.sections.push( new Surfaces_Demo( i ) );
+          this.sections.push( new Surfaces_Demo( i, this.material ) );
+      }
       else
         this[ "construct_scene_" + scene_id ] ();
     }
@@ -46,34 +51,18 @@ export class Surfaces_Demo extends Scene
                                        : initial_corner_point;
       const column_operation = (j,p) => Mat4.translation([ .2,0,0 ]).times(p.to4(1)).to3();
 
-      const row_operation_2    = (i,p)   => Vec.of(   0,2*i,Math.random() );
-      const column_operation_2 = (j,p,i) => Vec.of( 2*j,2*i,Math.random() );
+      const row_operation_2    = (i,p)   => Vec.of(   0,2*i-1,Math.random() );
+      const column_operation_2 = (j,p,i) => Vec.of( 2*j-1,2*i-1,Math.random() );
 
       this.shapes = { sheet : new defs.Grid_Patch( 10, 10, row_operation, column_operation ),
-                      sheet2: new defs.Grid_Patch( 10, 10, row_operation_2, column_operation_2 ) };
-
-//       this.shapes.sheet2.arrays.position.forEach( (p,i,a) => 
-//                       a[i] = p.plus( Vec.of( 0, 0, Math.random() ) ) );
-
-//       this.shapes.sheet2.duplicate_the_shared_vertices();
-//       this.shapes.sheet2.flat_shade();        
-
-      const textured = new defs.Textured_Phong( 1 );
-      this.material = new Material( textured, { ambient: .5, texture: new Texture( "assets/rgb.jpg" ) } );
+                      sheet2: new defs.Grid_Patch( 10, 10, row_operation_2, column_operation_2 ) };      
     }
   construct_scene_1()
     { const initial_corner_point = Vec.of( -1,-1,0 );
       const row_operation = (i,p) => p ? Mat4.translation([ 0,.2,0 ]).times(p.to4(1)).to3() 
                                        : initial_corner_point;
       const column_operation = (j,p) => Mat4.translation([ .2,0,0 ]).times(p.to4(1)).to3();
-      this.shapes = { sheet : new defs.Grid_Patch( 10, 10, row_operation, column_operation ),
-                      sheet2: new defs.Grid_Patch( 10, 10, row_operation, column_operation ) };
-
-      this.shapes.sheet2.arrays.position.forEach( (p,i,a) => 
-                      a[i] = p.plus( Vec.of( Math.random(), 0, Math.random() ) ) );
-
-      const textured = new defs.Textured_Phong( 1 );
-      this.material = new Material( textured, { ambient: .5, texture: new Texture( "assets/rgb.jpg" ) } );
+      this.shapes = { sheet : new defs.Grid_Patch( 10, 10, row_operation, column_operation ) };
     }
   construct_scene_2()
     { const initial_corner_point = Vec.of( -1,-1,0 );
@@ -85,23 +74,29 @@ export class Surfaces_Demo extends Scene
 
       this.shapes.sheet2.arrays.position.forEach( (p,i,a) => 
                       a[i] = p.plus( Vec.of( Math.random(), 0, Math.random() ) ) );
-
-      const textured = new defs.Textured_Phong( 1 );
-      this.material = new Material( textured, { ambient: .5, texture: new Texture( "assets/rgb.jpg" ) } );
     }
   display_scene_0( context, program_state )
     { 
       if( !context.scratchpad.controls ) 
         { this.children.push( context.scratchpad.controls = new defs.Movement_Controls() );
-          program_state.set_camera( Mat4.look_at( Vec.of( 0,0,-3 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0) ) );
+          program_state.set_camera( Mat4.translation([ 0,0,-3 ]) );
         }
 
-      this.shapes.sheet.draw( context, program_state, Mat4.translation([ -1.5,0,0]), this.material );
-
-      this.shapes.sheet2.draw( context, program_state, Mat4.translation([ 1.5,0,0]), this.material );
+      const r = Mat4.rotation( Math.PI, [ 0,1,0 ] );
+      this.shapes.sheet .draw( context, program_state, Mat4.translation([ -1.5,0,0]).times(r), this.material );
+      this.shapes.sheet2.draw( context, program_state, Mat4.translation([  1.5,0,0]).times(r), this.material );
     }
   display_scene_1( context, program_state )
-    { this.shapes.sheet.draw( context, program_state, Mat4.identity(), this.material );
+    { 
+      this.shapes.sheet.arrays.position.forEach( (p,i,a) => 
+                      a[i] = p.plus( Vec.of( 0, 0, .02*Math.random()-.01 ) ) );
+
+      this.shapes.sheet.flat_shade();
+
+      this.shapes.sheet.draw( context, program_state, Mat4.identity(), this.material );
+      
+     this.shapes.sheet.copy_onto_graphics_card( context.context, ["position","normal"], false );
+      
     }
   display_scene_2( context, program_state )
     { this.shapes.sheet.draw( context, program_state, Mat4.identity(), this.material );

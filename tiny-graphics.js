@@ -339,25 +339,32 @@ class Vertex_Buffer extends Graphics_Card_Object
                                 // multiple drawing areas.  If this is a new GPU context for this object, 
                                 // copy the object to the GPU.  Otherwise, this object already has been 
                                 // copied over, so get a pointer to the existing instance.
+      const did_exist = this.gpu_instances.get( context );
       const gpu_instance = super.copy_onto_graphics_card( context, initial_gpu_representation );
 
       const gl = context;
+
+      const write = did_exist ? ( target, data ) => gl.bufferSubData( target, 0, data )
+                              : ( target, data ) => gl.bufferData( target, data, gl.STATIC_DRAW );
+
       for( let name of selection_of_arrays )
-        { const buffer = gpu_instance.webGL_buffer_pointers[ name ] = gl.createBuffer();
-          gl.bindBuffer( gl.ARRAY_BUFFER, buffer );
-          gl.bufferData( gl.ARRAY_BUFFER, Mat.flatten_2D_to_1D( this.arrays[ name ] ), gl.STATIC_DRAW );
+        { if( !did_exist )
+            gpu_instance.webGL_buffer_pointers[ name ] = gl.createBuffer();
+          gl.bindBuffer( gl.ARRAY_BUFFER, gpu_instance.webGL_buffer_pointers[ name ] );
+          write( gl.ARRAY_BUFFER, Mat.flatten_2D_to_1D( this.arrays[ name ] ) );
         }
       if( this.indices.length && write_to_indices )
-      { this.index_buffer = gl.createBuffer();
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.index_buffer );
-        gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint32Array( this.indices ), gl.STATIC_DRAW );
+      { if( !did_exist )
+          gpu_instance.index_buffer = gl.createBuffer();
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, gpu_instance.index_buffer );
+        write( gl.ELEMENT_ARRAY_BUFFER, new Uint32Array( this.indices ) );
       }
       return gpu_instance;
     }
-  execute_shaders( gl, type )     // execute_shaders(): Draws this shape's entire vertex buffer.
+  execute_shaders( gl, gpu_instance, type )     // execute_shaders(): Draws this shape's entire vertex buffer.
     {       // Draw shapes using indices if they exist.  Otherwise, assume the vertices are arranged as triples.
       if( this.indices.length )
-      { gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.index_buffer );
+      { gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, gpu_instance.index_buffer );
         gl.drawElements( gl[type], this.indices.length, gl.UNSIGNED_INT, 0 ) 
       }
       else  gl.drawArrays( gl[type], 0, Object.values( this.arrays )[0].length );
@@ -369,7 +376,7 @@ class Vertex_Buffer extends Graphics_Card_Object
       const gpu_instance = this.activate( webgl_manager.context );
       material.shader.activate( webgl_manager.context, gpu_instance.webGL_buffer_pointers, program_state, model_transform, material );
                                                               // Run the shaders to draw every triangle now:
-      this.execute_shaders( webgl_manager.context, type );
+      this.execute_shaders( webgl_manager.context, gpu_instance, type );
     }
 }
 
@@ -451,8 +458,7 @@ class Shape extends Vertex_Buffer
                          // Automatically assign the correct normals to each triangular element to achieve flat shading.
                          // Affect all recently added triangles (those past "offset" in the list).  Assumes that no
                          // vertices are shared across seams.   First, iterate through the index or position triples:
-      this.indices.length = false;   
-      for( let counter = 0; counter < (this.indices.length ? this.indices.length : this.arrays.position.length); counter += 3 )
+      for( let counter = 0; counter < (this.indices ? this.indices.length : this.arrays.position.length); counter += 3 )
       { const indices = this.indices.length ? [ this.indices[ counter ], this.indices[ counter + 1 ], this.indices[ counter + 2 ] ]
                                             : [ counter, counter + 1, counter + 2 ];
         const [ p1, p2, p3 ] = indices.map( i => this.arrays.position[ i ] );
