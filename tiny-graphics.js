@@ -354,11 +354,11 @@ class Vertex_Buffer extends Graphics_Card_Object
           write( gl.ARRAY_BUFFER, Mat.flatten_2D_to_1D( this.arrays[ name ] ) );
         }
       if( this.indices.length && write_to_indices )
-      { if( !did_exist )
-          gpu_instance.index_buffer = gl.createBuffer();
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, gpu_instance.index_buffer );
-        write( gl.ELEMENT_ARRAY_BUFFER, new Uint32Array( this.indices ) );
-      }
+        { if( !did_exist )
+            gpu_instance.index_buffer = gl.createBuffer();
+          gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, gpu_instance.index_buffer );
+          write( gl.ELEMENT_ARRAY_BUFFER, new Uint32Array( this.indices ) );
+        }
       return gpu_instance;
     }
   execute_shaders( gl, gpu_instance, type )     // execute_shaders(): Draws this shape's entire vertex buffer.
