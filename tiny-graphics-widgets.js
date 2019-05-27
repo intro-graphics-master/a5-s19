@@ -188,7 +188,7 @@ class Code_Widget
   constructor( element, main_scene, additional_scenes, definitions, options = {} )
     { const rules = [ ".code-widget .code-panel { margin:auto; background:white; overflow:auto; font-family:monospace; width:1060px; padding:10px; padding-bottom:40px; max-height: 500px; \
                                                       border-radius:12px; box-shadow: 20px 20px 90px 0px powderblue inset, 5px 5px 30px 0px blue inset }",
-                    ".code-widget .code-display { min-width:1800px; padding:10px; white-space:pre-wrap; background:transparent }",
+                    ".code-widget .code-display { min-width:1200px; padding:10px; white-space:pre-wrap; background:transparent }",
                     ".code-widget table { display:block; margin:auto; overflow-x:auto; width:1080px; border-radius:25px; border-collapse:collapse; border: 2px solid black }",
                     ".code-widget table.class-list td { border-width:thin; background: #EEEEEE; padding:12px; font-family:monospace; border: 1px solid black }"
                      ];
@@ -207,7 +207,7 @@ class Code_Widget
       const code_panel = element.appendChild( document.createElement( "div" ) );
       code_panel.className = "code-panel";
 //       const text        = code_panel.appendChild( document.createElement( "p" ) );
-//       text.textContent  = "Below is the code for the demo that's running.  Click links to see definitions!";
+//       text.textContent  = "Code for the above scene:";
       this.code_display = code_panel.appendChild( document.createElement( "div" ) );
       this.code_display.className = "code-display";
                                                                             // Default textbox contents:
@@ -294,7 +294,7 @@ class Text_Widget
                                                  // documentation is extracted from whichever Scene object gets loaded first.
   constructor( element, scenes, webgl_manager ) 
     { const rules = [ ".text-widget { background: white; width:1060px;\
-                        padding:0 10px; overflow:auto; transition:1s; overflow-y:scroll; box-shadow: 10px 10px 90px 0 inset Gray}" ];
+                        padding:0 10px; overflow:auto; transition:1s; overflow-y:scroll; box-shadow: 10px 10px 90px 0 inset LightGray}" ];
       if( document.styleSheets.length == 0 ) document.head.appendChild( document.createElement( "style" ) );
       for( const r of rules ) document.styleSheets[document.styleSheets.length - 1].insertRule( r, 0 )
 

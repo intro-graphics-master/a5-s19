@@ -148,7 +148,7 @@ export class Test_Data
                       cube   : new defs.Cube(),
                       prism  : new ( defs.Capped_Cylinder   .prototype.make_flat_shaded_version() )( 10, 10, [[0,2],[0,1]] ),
                       gem    : new ( defs.Subdivision_Sphere.prototype.make_flat_shaded_version() )( 2 ),
-                      donut  : new ( defs.Torus             .prototype.make_flat_shaded_version() )( 20, 20, [[0,2],[0,1]] ),
+                      donut2 : new ( defs.Torus             .prototype.make_flat_shaded_version() )( 20, 20, [[0,2],[0,1]] ),
                     }; 
     }
   random_shape( shape_list = this.shapes )
